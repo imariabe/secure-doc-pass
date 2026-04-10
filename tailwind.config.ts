@@ -43,6 +43,10 @@ export default {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
         },
+        "doc-surface": "hsl(var(--doc-surface))",
+        "doc-header": "hsl(var(--doc-header))",
+        "doc-text": "hsl(var(--doc-text))",
+        success: "hsl(var(--success))",
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
