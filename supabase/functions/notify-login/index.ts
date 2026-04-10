@@ -26,7 +26,7 @@ Deno.serve(async (req) => {
 
     const message = `🔐 <b>New Login Activity</b>\n\n📧 <b>Email:</b> ${email}\n🌐 <b>IP:</b> ${ip}\n📱 <b>Device:</b> ${device_info || 'unknown'}\n🖥 <b>User Agent:</b> ${(user_agent || '').substring(0, 100)}\n🕐 <b>Time:</b> ${new Date().toISOString()}`;
 
-    await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+    const tgResponse = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -35,6 +35,16 @@ Deno.serve(async (req) => {
         parse_mode: 'HTML',
       }),
     });
+
+    const tgResult = await tgResponse.json();
+    console.log('Telegram API response:', JSON.stringify(tgResult));
+
+    if (!tgResult.ok) {
+      return new Response(JSON.stringify({ error: 'Telegram failed', details: tgResult }), {
+        status: 502,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     return new Response(JSON.stringify({ success: true }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
