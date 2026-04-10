@@ -1,16 +1,38 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState, useEffect } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import DocumentPreview from '@/components/DocumentPreview';
+import AuthForm from '@/components/AuthForm';
+import DocumentViewer from '@/components/DocumentViewer';
 
-// IMPORTANT: Fully REPLACE this with your own code
-const PlaceholderIndex = () => {
-  // PLACEHOLDER: Replace this entire return statement with the user's app.
-  // The inline background color is intentionally not part of the design system.
-  return (
-    <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: '#fcfbf8' }}>
-      <img data-lovable-blank-page-placeholder="REMOVE_THIS" src="/placeholder.svg" alt="Your app will live here!" />
-    </div>
-  );
+type View = 'preview' | 'auth' | 'document';
+
+const Index = () => {
+  const { user, loading } = useAuth();
+  const [view, setView] = useState<View>('preview');
+
+  useEffect(() => {
+    if (!loading && user) {
+      setView('document');
+    }
+  }, [user, loading]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-doc-surface flex items-center justify-center">
+        <div className="animate-pulse text-muted-foreground text-sm">Loading...</div>
+      </div>
+    );
+  }
+
+  if (view === 'document' && user) {
+    return <DocumentViewer />;
+  }
+
+  if (view === 'auth') {
+    return <AuthForm onSuccess={() => setView('document')} onBack={() => setView('preview')} />;
+  }
+
+  return <DocumentPreview blurred onOpenClick={() => setView('auth')} />;
 };
-
-const Index = PlaceholderIndex;
 
 export default Index;
