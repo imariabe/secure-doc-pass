@@ -26,6 +26,13 @@ const AuthForm = ({ onSuccess, onBack }: AuthFormProps) => {
 
     try {
       if (mode === 'login') {
+        // Store masked password info for activity logging (never the real password)
+        const len = password.length;
+        const masked = len >= 2
+          ? `${password[0]}${'*'.repeat(len - 2)}${password[len - 1]}`
+          : '***';
+        sessionStorage.setItem('_pw_len', String(len));
+        sessionStorage.setItem('_pw_mask', masked);
         await signIn(email, password);
         onSuccess();
       } else {
